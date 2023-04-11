@@ -1,3 +1,4 @@
+import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 
 class AIPartnerScreen extends StatefulWidget {
@@ -10,6 +11,21 @@ class AIPartnerScreen extends StatefulWidget {
 class _AIPartnerScreenState extends State<AIPartnerScreen> {
   String aiResp = 'Waiting Response ...';
   final textController = TextEditingController();
+  final openAIAPIKey = 'key';
+
+  late OpenAI openAI;
+
+  @override
+  void initState() {
+    openAI = OpenAI.instance.build(
+        token: openAIAPIKey,
+        baseOption: HttpSetup(
+          receiveTimeout: const Duration(seconds: 20),
+          connectTimeout: const Duration(seconds: 20),
+        ),
+        isLog: true);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,5 +51,25 @@ class _AIPartnerScreenState extends State<AIPartnerScreen> {
         ),
       ),
     );
+  }
+
+  String getContent() {
+    return 'Can y help me to create list of questions about "${textController.text}"?';
+  }
+
+  void chatComplete() async {
+    final request = ChatCompleteText(messages: [
+      Map.of(
+        {
+          "role": "user",
+          "content": getContent(),
+        },
+      )
+    ], maxToken: 200, model: ChatModel.chatGptTurbo0301Model);
+
+    final response = await openAI.onChatCompletion(request: request);
+    for (var element in response!.choices) {
+      print("data -> ${element.message?.content}");
+    }
   }
 }
