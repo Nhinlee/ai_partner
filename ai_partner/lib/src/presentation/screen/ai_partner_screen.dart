@@ -11,7 +11,7 @@ class AIPartnerScreen extends StatefulWidget {
 class _AIPartnerScreenState extends State<AIPartnerScreen> {
   String aiResp = 'Waiting Response ...';
   final textController = TextEditingController();
-  final openAIAPIKey = 'Key';
+  final openAIAPIKey = '...';
   late OpenAI openAI;
 
   bool isLoading = false;
@@ -55,7 +55,7 @@ class _AIPartnerScreenState extends State<AIPartnerScreen> {
             Expanded(
               child: Center(
                 child: Visibility(
-                  visible: !isLoading,
+                  visible: aiResp.length != 0,
                   replacement: SizedBox(
                     height: 30,
                     width: 30,
@@ -95,25 +95,29 @@ class _AIPartnerScreenState extends State<AIPartnerScreen> {
             },
           )
         ],
-        maxToken: 200,
+        maxToken: 500,
         model: ChatModel.chatGptTurbo0301Model,
       );
 
-      final response = await openAI.onChatCompletion(request: request);
-
-      String rs = "";
-      for (var element in response!.choices) {
-        print("data -> ${element.message?.content}");
-        rs += element.message?.content ?? "";
-        rs += "\n";
-      }
-
       setState(() {
-        aiResp = rs;
+        aiResp = "";
       });
+
+      final response =
+          await openAI.onChatCompletionSSE(request: request).listen(
+        (event) {
+          setState(() {
+            aiResp += event.choices.last.message?.content ?? "";
+          });
+        },
+        onDone: () {
+          setState(() {
+            isLoading = false;
+          });
+        },
+      );
     } catch (e) {
       print(e);
-    } finally {
       setState(() {
         isLoading = false;
       });
