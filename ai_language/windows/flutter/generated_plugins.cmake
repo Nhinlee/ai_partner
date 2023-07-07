@@ -3,6 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  firebase_core
+  permission_handler_windows
+  platform_device_id_windows
+  smart_auth
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
