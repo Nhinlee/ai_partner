@@ -47,5 +47,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LLA need get photo library to learning languages</string>
+	<key>NSCameraUsageDescription</key>
+    <string>LLA need get capture image to learning languages</string>
 </dict>
 </plist>

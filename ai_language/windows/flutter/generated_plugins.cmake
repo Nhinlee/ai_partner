@@ -3,9 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  firebase_core
-  permission_handler_windows
-  platform_device_id_windows
+  file_selector_windows
   smart_auth
 )
 

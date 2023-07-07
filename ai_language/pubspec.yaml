@@ -26,18 +26,8 @@ dependencies:
   flutter_native_splash: ^2.2.9
 
   # Platform features
-  just_audio: ^0.9.31
-  chewie: ^1.4.0
-  video_player: ^2.5.3
-  visibility_detector: ^0.3.3
-  flutter_sound: ^9.2.13
-  permission_handler: ^10.2.0
-  audio_session: ^0.1.13
-  path_provider: ^2.0.13
-  webview_flutter: ^4.0.6
   file_picker: ^5.2.5
-  platform_device_id: ^1.0.1
-
+  image_picker: ^1.0.0
 
   # DI
   injectable: ^2.1.0
@@ -60,8 +50,6 @@ dependencies:
   # Utils
   uuid: ^3.0.7
   logging: ^1.0.2
-  firebase_core: ^2.7.1
-  firebase_messaging: ^14.2.6
 
 dev_dependencies:
   # linter
