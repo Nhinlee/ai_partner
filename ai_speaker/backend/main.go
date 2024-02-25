@@ -4,6 +4,7 @@ import (
 	"ai_speaker/configs"
 	"ai_speaker/golibs/ai/gemini"
 	"context"
+	"fmt"
 )
 
 func main() {
@@ -27,5 +28,5 @@ func main() {
 	}
 
 	// print generated text
-	println(text)
+	fmt.Printf("Generated text: %s\n", text)
 }

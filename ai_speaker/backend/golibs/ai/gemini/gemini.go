@@ -17,9 +17,8 @@ func NewGemini(ctx context.Context, apiKey string) (*Gemini, error) {
 	if err != nil {
 		return nil, errors.Errorf("failed to create new client: %v", err)
 	}
-	defer client.Close()
 
-	model := client.GenerativeModel("gemini-pro-vision")
+	model := client.GenerativeModel("gemini-pro")
 
 	return &Gemini{
 		model: model,
@@ -36,5 +35,10 @@ func (g *Gemini) GenerateContent(ctx context.Context, prompt string) (string, er
 		return "", errors.Errorf("failed to generate content: %v", err)
 	}
 
-	return resp.PromptFeedback.BlockReason.String(), nil
+	text := ""
+	for _, candidate := range resp.Candidates {
+		text += candidate.Content.Role // TODO: check if this is the correct field
+	}
+
+	return text, nil
 }
