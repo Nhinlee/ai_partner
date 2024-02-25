@@ -35,10 +35,20 @@ func (g *Gemini) GenerateContent(ctx context.Context, prompt string) (string, er
 		return "", errors.Errorf("failed to generate content: %v", err)
 	}
 
-	text := ""
+	var text string
 	for _, candidate := range resp.Candidates {
-		text += candidate.Content.Role // TODO: check if this is the correct field
+		text = getCombinedText(candidate.Content)
 	}
 
 	return text, nil
+}
+
+func getCombinedText(content *genai.Content) string {
+	var text string
+	for _, part := range content.Parts {
+		if textContent, ok := part.(genai.Text); ok {
+			text += string(textContent)
+		}
+	}
+	return text
 }
