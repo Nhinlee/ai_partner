@@ -2,7 +2,6 @@ package gemini
 
 import (
 	"context"
-	"os"
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/pkg/errors"
@@ -13,9 +12,7 @@ type Gemini struct {
 	model *genai.GenerativeModel
 }
 
-func NewGemini(ctx context.Context) (*Gemini, error) {
-	apiKey := os.Getenv("GENAI_API_KEY")
-	println(apiKey)
+func NewGemini(ctx context.Context, apiKey string) (*Gemini, error) {
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
 		return nil, errors.Errorf("failed to create new client: %v", err)
