@@ -1,10 +1,10 @@
 package main
 
 import (
+	"ai_speaker/apis"
 	"ai_speaker/configs"
 	"ai_speaker/golibs/ai/gemini"
 	"context"
-	"fmt"
 )
 
 func main() {
@@ -21,12 +21,10 @@ func main() {
 		panic(err)
 	}
 
-	// generate text
-	text, err := gemini.GenerateContent(ctx, "Are y Gemini pro?")
+	server, err := apis.NewServer(gemini)
 	if err != nil {
 		panic(err)
 	}
 
-	// print generated text
-	fmt.Printf("Generated text: %s\n", text)
+	server.Start()
 }
