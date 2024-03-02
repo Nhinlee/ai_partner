@@ -1,4 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sound_stream/sound_stream.dart';
+import 'package:web_socket_channel/io.dart';
 
 class TestSTTScreen extends StatefulWidget {
   const TestSTTScreen({super.key});
@@ -9,6 +15,69 @@ class TestSTTScreen extends StatefulWidget {
 
 class _TestSTTScreenState extends State<TestSTTScreen> {
   String textFromSpeaker = '';
+  final RecorderStream _recorder = RecorderStream();
+
+  late StreamSubscription _recorderStatus;
+  late StreamSubscription _audioStream;
+
+  late IOWebSocketChannel channel;
+
+  static const serverUrl =
+      'wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&language=en-GB';
+  static const apiKey =
+      '<your Deepgram API key>'; // NOTE: Replace with your Deepgram API key
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance?.addPostFrameCallback(onLayoutDone);
+  }
+
+  void onLayoutDone(Duration timeStamp) async {
+    await Permission.microphone.request();
+    setState(() {});
+  }
+
+  Future<void> _initStream() async {
+    channel = IOWebSocketChannel.connect(Uri.parse(serverUrl),
+        headers: {'Authorization': 'Token $apiKey'});
+
+    channel.stream.listen((event) async {
+      final parsedJson = jsonDecode(event);
+
+      updateText(parsedJson['channel']['alternatives'][0]['transcript']);
+    });
+
+    _audioStream = _recorder.audioStream.listen((data) {
+      channel.sink.add(data);
+    });
+
+    _recorderStatus = _recorder.status.listen((status) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+
+    await Future.wait([
+      _recorder.initialize(),
+    ]);
+  }
+
+  void _startRecord() async {
+    resetText();
+    await _initStream();
+
+    await _recorder.start();
+
+    setState(() {});
+  }
+
+  void _stopRecord() async {
+    await _recorder.stop();
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +95,16 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
             ),
             const SizedBox(height: 32),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                updateText('');
+                _startRecord();
+              },
               child: const Text('Start STT'),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                _stopRecord();
+              },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.red,
@@ -53,5 +127,14 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
     setState(() {
       textFromSpeaker = '';
     });
+  }
+
+  @override
+  void dispose() {
+    _recorderStatus.cancel();
+    _audioStream.cancel();
+    channel.sink.close();
+
+    super.dispose();
   }
 }
