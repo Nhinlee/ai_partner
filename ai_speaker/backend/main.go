@@ -3,7 +3,7 @@ package main
 import (
 	"ai_speaker/apis"
 	"ai_speaker/configs"
-	"ai_speaker/golibs/ai/gemini"
+	"ai_speaker/golibs/chat_bot/gemini"
 	"context"
 )
 

@@ -1,9 +1,10 @@
 package apis
 
 import (
-	"ai_speaker/golibs/ai/gemini"
 	"fmt"
 	"os"
+
+	chatbot "ai_speaker/golibs/chat_bot"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,13 +12,13 @@ import (
 type Server struct {
 	router *gin.Engine
 
-	// gemini is a AI model
-	gemini *gemini.Gemini // TODO: should be interface to make it testable & replaceable
+	// Large Language Model chatbot
+	ChatBot chatbot.ChatBot
 }
 
-func NewServer(gemini *gemini.Gemini) (*Server, error) {
+func NewServer(chatBot chatbot.ChatBot) (*Server, error) {
 	server := &Server{
-		gemini: gemini,
+		ChatBot: chatBot,
 	}
 
 	server.SetupREST()
