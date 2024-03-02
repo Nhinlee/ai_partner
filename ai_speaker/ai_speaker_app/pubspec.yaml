@@ -13,6 +13,14 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
+  web_socket_channel: ^2.4.0
+  # sound_stream: ^0.3.0
+  sound_stream:
+    git:
+      url: https://github.com/GregHolmes/flutter-sound-stream.git
+      ref: main # branch name
+  permission_handler: ^10.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -42,4 +42,16 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
       ),
     );
   }
+
+  void updateText(newText) {
+    setState(() {
+      textFromSpeaker = textFromSpeaker + ' ' + newText;
+    });
+  }
+
+  void resetText() {
+    setState(() {
+      textFromSpeaker = '';
+    });
+  }
 }
