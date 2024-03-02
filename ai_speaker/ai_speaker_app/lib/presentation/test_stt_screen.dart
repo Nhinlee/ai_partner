@@ -25,7 +25,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
   static const serverUrl =
       'wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&language=en-GB';
   static const apiKey =
-      '<your Deepgram API key>'; // NOTE: Replace with your Deepgram API key
+      'YOUR API KEY'; // NOTE: Replace with your Deepgram API key (just for testing)
 
   @override
   void initState() {
@@ -45,8 +45,10 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
 
     channel.stream.listen((event) async {
       final parsedJson = jsonDecode(event);
+      final transcript = parsedJson['channel']['alternatives'][0]['transcript'];
 
-      updateText(parsedJson['channel']['alternatives'][0]['transcript']);
+      debugPrint('>>> transcript from stream: $transcript');
+      updateText(transcript);
     });
 
     _audioStream = _recorder.audioStream.listen((data) {
