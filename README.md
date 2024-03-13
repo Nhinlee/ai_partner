@@ -24,3 +24,7 @@ TBU
         - STT: Deepgram
         - Mobile app: Flutter
         - Protocol: Websocket
+
+### 2024/03/13
+- Try to design of the AI Speaker Assistant app with 3rd party API.
+    - ![AI assistant app flow](./ai_speaker/assets/imgs/seq_v1.png)
