@@ -19,6 +19,9 @@ func NewGemini(ctx context.Context, apiKey string) (*Gemini, error) {
 	}
 
 	model := client.GenerativeModel("gemini-pro")
+	if model == nil {
+		return nil, errors.Errorf("failed to create new model")
+	}
 
 	return &Gemini{
 		model: model,
@@ -26,10 +29,6 @@ func NewGemini(ctx context.Context, apiKey string) (*Gemini, error) {
 }
 
 func (g *Gemini) GenerateContent(ctx context.Context, prompt string) (string, error) {
-	if g.model == nil {
-		return "", errors.Errorf("model is not initialized")
-	}
-
 	resp, err := g.model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
 		return "", errors.Errorf("failed to generate content: %v", err)
@@ -51,4 +50,24 @@ func getCombinedText(content *genai.Content) string {
 		}
 	}
 	return text
+}
+
+func (g *Gemini) GenerateRealtimeContent(ctx context.Context, prompt string) (chan string, error) {
+	iter := g.model.GenerateContentStream(ctx, genai.Text(prompt))
+
+	ch := make(chan string)
+
+	// loop through the iterator
+	go func() {
+		for {
+			resp, err := iter.Next()
+			if err != nil {
+				close(ch)
+				return
+			}
+			ch <- getCombinedText(resp.Candidates[0].Content)
+		}
+	}()
+
+	return ch, nil
 }

@@ -1,6 +1,8 @@
 package apis
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -45,7 +47,7 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 		return
 	}
 
-	content, err := s.ChatBot.GenerateContent(c, req.Prompt)
+	contentChan, err := s.ChatBot.GenerateRealtimeContent(c, req.Prompt)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
@@ -53,8 +55,15 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 		return
 	}
 
+	go func() {
+		// print content to console
+		for content := range contentChan {
+			fmt.Printf("Content: %s\n", content)
+		}
+	}()
+
 	// TODO: Implement real-time chatbot
 	c.JSON(200, gin.H{
-		"content": content,
+		"content": "123",
 	})
 }
