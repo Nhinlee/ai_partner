@@ -30,6 +30,8 @@ func (s *Server) SetupREST() {
 	router := gin.Default()
 
 	router.GET("/ping", s.Ping)
+	router.POST("/v1/chat/text/generate", s.GenerateContent)
+	router.POST("/v1/chat/text/realtime", s.GenerateRealtimeContent)
 
 	s.router = router
 }
