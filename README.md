@@ -28,3 +28,9 @@ TBU
 ### 2024/03/13
 - Try to design of the AI Speaker Assistant app with 3rd party API.
     - ![AI assistant app flow](./ai_speaker/assets/imgs/seq_v1.png)
+
+### 2024/03/15
+- Play aground with Gemini AI API.
+    - [Gemini API](https://ai.google.dev/docs?_gl=1*1kk9k10*_up*MQ..&gclid=CjwKCAjw48-vBhBbEiwAzqrZVGvmGv6Srbo0VJ5An3y1IBB_Y8r6eZM5yt9ehCaLGewcBUOCyJAAhxoCybAQAvD_BwE)
+    - [Youtube demo](https://www.youtube.com/watch?v=3NOhX47xV_M&t=42s)
+    - Split stream text from Gemini API to sentences using Go Channels.
