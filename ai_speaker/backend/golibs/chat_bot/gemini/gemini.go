@@ -1,6 +1,7 @@
 package gemini
 
 import (
+	"ai_speaker/golibs/chat_bot/utils"
 	"context"
 
 	"github.com/google/generative-ai-go/genai"
@@ -69,5 +70,5 @@ func (g *Gemini) GenerateRealtimeContent(ctx context.Context, prompt string) (ch
 		}
 	}()
 
-	return ch, nil
+	return utils.ToSentenceStream(ch), nil
 }
