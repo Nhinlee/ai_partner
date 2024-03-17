@@ -34,3 +34,8 @@ TBU
     - [Demo Ep2](https://www.youtube.com/watch?v=3NOhX47xV_M&t=42s)
     - [Gemini API](https://ai.google.dev/docs?_gl=1*1kk9k10*_up*MQ..&gclid=CjwKCAjw48-vBhBbEiwAzqrZVGvmGv6Srbo0VJ5An3y1IBB_Y8r6eZM5yt9ehCaLGewcBUOCyJAAhxoCybAQAvD_BwE)
     - Split stream text from Gemini API to sentences using Go Channels.
+
+### 2024/03/17
+- Trying with OpenAI TTS (text-to-speak) using terminal
+    - [Demo Ep3](https://youtu.be/M7G_Ws1qgsM?si=hir2If0khgdCRvCf) - Demonstrate how to use OpenAI TTS API to convert text to speech using terminal.
+
