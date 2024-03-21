@@ -5,6 +5,7 @@ import (
 	"os"
 
 	chatbot "ai_speaker/golibs/chat_bot"
+	"ai_speaker/golibs/tts"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +15,15 @@ type Server struct {
 
 	// Large Language Model chatbot
 	ChatBot chatbot.ChatBot
+
+	// Text-to-Speech
+	TTS tts.TTS
 }
 
-func NewServer(chatBot chatbot.ChatBot) (*Server, error) {
+func NewServer(chatBot chatbot.ChatBot, tts tts.TTS) (*Server, error) {
 	server := &Server{
 		ChatBot: chatBot,
+		TTS:     tts,
 	}
 
 	server.SetupREST()

@@ -11,7 +11,11 @@ type Secret struct {
 }
 
 type AISecret struct {
+	// Gemini AI keys
 	GenaiAPIKey string
+
+	// OpenAI keys
+	OpenAiTTSKey string
 }
 
 func NewSecret() (*Secret, error) {
@@ -23,6 +27,7 @@ func NewSecret() (*Secret, error) {
 	return &Secret{
 		AI: AISecret{
 			GenaiAPIKey: os.Getenv("GENAI_API_KEY"),
+			OpenAiTTSKey: os.Getenv("OPENAI_TTS_KEY"),
 		},
 	}, nil
 }

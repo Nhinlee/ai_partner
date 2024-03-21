@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"ai_speaker/golibs/tts"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -55,15 +56,32 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 		return
 	}
 
-	go func() {
-		// print content to console
-		for content := range contentChan {
-			fmt.Printf("Content: %s\n", content)
-		}
-	}()
+	// go func() {
+	// 	// print content to console
+	// 	for content := range contentChan {
+	// 		fmt.Printf("Content: %s\n", content)
+	// 	}
+	// }()
 
-	// TODO: Implement real-time chatbot
-	c.JSON(200, gin.H{
-		"content": "123",
+	var respMessage string
+	for content := range contentChan {
+		fmt.Printf("Content: %s\n", content)
+		respMessage = content
+		break
+	}
+
+	// Use TTS to convert text to speech
+	audioResp, err := s.TTS.CreateSpeech(c, &tts.CreateSpeechRequest{
+		Input:          respMessage,
+		ResponseFormat: "mp3", // TODO: Use enum
+		Speed:          1.0,
 	})
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(), // TODO: Use custom error
+		})
+		return
+	}
+
+	c.DataFromReader(200, -1, "audio/mpeg", audioResp, nil)
 }
