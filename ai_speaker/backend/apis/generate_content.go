@@ -66,8 +66,7 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 	var respMessage string
 	for content := range contentChan {
 		fmt.Printf("Content: %s\n", content)
-		respMessage = content
-		break
+		respMessage += content
 	}
 
 	// Use TTS to convert text to speech
