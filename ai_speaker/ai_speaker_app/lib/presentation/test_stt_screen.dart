@@ -1,13 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:ai_speaker_app/protobuf/generated/chat/voice.pbgrpc.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sound_stream/sound_stream.dart';
 import 'package:web_socket_channel/io.dart';
 
 class TestSTTScreen extends StatefulWidget {
-  const TestSTTScreen({super.key});
+  const TestSTTScreen({
+    super.key,
+    required this.voiceClient,
+  });
+
+  final VoiceChatServiceClient voiceClient;
 
   @override
   State<TestSTTScreen> createState() => _TestSTTScreenState();
@@ -112,6 +118,20 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
                 backgroundColor: Colors.red,
               ),
               child: const Text('Stop STT'),
+            ),
+            StreamBuilder(
+              stream: widget.voiceClient.voiceChat(
+                VoiceChatRequest(
+                  text: "Hello, this is a test message from Flutter app.",
+                ),
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data!.audio.toString());
+                } else {
+                  return const Text('No data');
+                }
+              },
             ),
           ],
         ),
