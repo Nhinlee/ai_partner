@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:ai_speaker_app/presentation/voice_audio_source.dart';
 import 'package:ai_speaker_app/protobuf/generated/chat/voice.pbgrpc.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sound_stream/sound_stream.dart';
 import 'package:web_socket_channel/io.dart';
@@ -33,11 +35,27 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
   static const apiKey =
       'YOUR API KEY'; // NOTE: Replace with your Deepgram API key (just for testing)
 
+  final audioPlayer = AudioPlayer();
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance?.addPostFrameCallback(onLayoutDone);
+
+    audioPlayer.setAudioSource(
+      VoiceAudioSource(
+        widget.voiceClient
+            .voiceChat(
+              VoiceChatRequest(
+                text: "Hello, this is a test message from Flutter app. Ahihi!",
+              ),
+            )
+            .map(
+              (event) => event.audio,
+            ),
+      ),
+    );
   }
 
   void onLayoutDone(Duration timeStamp) async {
@@ -119,19 +137,15 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
               ),
               child: const Text('Stop STT'),
             ),
-            StreamBuilder(
-              stream: widget.voiceClient.voiceChat(
-                VoiceChatRequest(
-                  text: "Hello, this is a test message from Flutter app.",
-                ),
-              ),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data!.audio.toString());
-                } else {
-                  return const Text('No data');
-                }
+            OutlinedButton(
+              onPressed: () {
+                audioPlayer.play();
               },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Play voice message'),
             ),
           ],
         ),
