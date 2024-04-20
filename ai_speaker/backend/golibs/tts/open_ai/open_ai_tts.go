@@ -35,7 +35,7 @@ func (tts *OpenAiTTS) CreateSpeech(ctx context.Context, req *tts.CreateSpeechReq
 
 	return tts.Client.CreateSpeech(ctx, openai.CreateSpeechRequest{
 		Input:          req.Input,
-		ResponseFormat: openai.SpeechResponseFormatMp3,
+		ResponseFormat: openai.SpeechResponseFormatMp3, // TODO: use opus format to optimize bandwidth
 		Speed:          float64(req.Speed),
 		Voice:          openai.VoiceFable,
 		Model:          openai.TTSModel1,

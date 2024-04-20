@@ -36,15 +36,14 @@ func main() {
 	client := openai.NewClient(secret.AI.OpenAiTTSKey)
 	tts := openai_tts.NewOpenAiTTS(client)
 
-	server, err := apis.NewServer(gemini, tts)
-	if err != nil {
-		panic(err)
-	}
-
 	// Start SocketIO server
 	go handleSocketIO()
 
-	server.Start()
+	// Start HTTP server
+	_, err = apis.NewServer(gemini, tts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func handleSocketIO() {

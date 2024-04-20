@@ -83,5 +83,5 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 		return
 	}
 
-	c.DataFromReader(200, -1, "audio/mpeg", audioResp, nil)
+	c.DataFromReader(200, -1, "audio/mp3", audioResp, nil)
 }
