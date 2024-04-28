@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 class VoiceAudioSource extends StreamAudioSource {
@@ -7,20 +9,30 @@ class VoiceAudioSource extends StreamAudioSource {
   VoiceAudioSource(this.stream) {
     stream.listen((data) {
       debugPrint('>>> data: $data');
+      _streamController.add(data);
       buffer.addAll(data);
     });
   }
 
+  int index = 0;
+
+  StreamController<List<int>> _streamController =
+      StreamController<List<int>>.broadcast();
+  StreamController<List<int>> get streamController => _streamController;
+
   @override
   Future<StreamAudioResponse> request([int? start, int? end]) async {
-    start ??= 0;
-    end ??= buffer.length;
+    start ??= index;
+    end = buffer.length;
+    index = end;
+
+    debugPrint('>>> start: $start, end: $end, index: $index');
 
     return StreamAudioResponse(
-      sourceLength: buffer.length,
-      contentLength: end - start,
+      sourceLength: null,
+      contentLength: end,
       offset: start,
-      stream: Stream.value(buffer.sublist(start, end)),
+      stream: streamController.stream.asBroadcastStream(),
       contentType: 'audio/mpeg',
     );
   }
