@@ -39,3 +39,11 @@ TBU
 - Trying with OpenAI TTS (text-to-speak) using terminal
     - [Demo Ep3](https://youtu.be/M7G_Ws1qgsM?si=hir2If0khgdCRvCf) - Demonstrate how to use OpenAI TTS API to convert text to speech using terminal.
 
+### 2024/04/29
+- Implement the voice chat API
+    - Tech stack:
+        - API architecture: RPC
+        - API framework: gRPC
+        - Streaming audio protocol: gRPC stream
+        - Client framework: flutter_sound
+    - [Demo Ep4](https://todo)
