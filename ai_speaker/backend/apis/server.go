@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 
 	chatbot "ai_speaker/golibs/chat_bot"
 	"ai_speaker/golibs/tts"
@@ -12,6 +13,28 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 )
+
+type APIArch string
+
+const (
+	REST APIArch = "rest"
+	GRPC APIArch = "grpc"
+)
+
+func ToAPIArch(str string) APIArch {
+	str = strings.ToLower(str) // Normalize to lowercase
+
+	switch str {
+	case "rest":
+		return REST
+	case "grpc":
+		return GRPC
+	default:
+		fmt.Printf("Unknown API architecture: %s\n", str)
+		fmt.Printf("Defaulting to REST API\n")
+		return REST
+	}
+}
 
 type Server struct {
 	router *gin.Engine
@@ -25,19 +48,19 @@ type Server struct {
 	TTS tts.TTS
 }
 
-func NewServer(chatBot chatbot.ChatBot, tts tts.TTS) (*Server, error) {
+func NewServer(api APIArch, chatBot chatbot.ChatBot, tts tts.TTS) (*Server, error) {
 	server := &Server{
 		ChatBot: chatBot,
 		TTS:     tts,
 	}
 
-	// Setup REST API
-	// server.SetupREST()
-
-	// Setup gRPC API
-	err := server.SetupGRPC()
-	if err != nil {
-		return nil, err
+	if api == REST {
+		server.SetupREST()
+	} else if api == GRPC {
+		err := server.SetupGRPC()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return server, nil

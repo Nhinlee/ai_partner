@@ -40,7 +40,8 @@ func main() {
 	go handleSocketIO()
 
 	// Start HTTP server
-	_, err = apis.NewServer(gemini, tts)
+	apiArch := apis.ToAPIArch(os.Getenv("API"))
+	_, err = apis.NewServer(apiArch, gemini, tts)
 	if err != nil {
 		panic(err)
 	}

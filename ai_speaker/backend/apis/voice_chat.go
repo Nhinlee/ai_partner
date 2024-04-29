@@ -11,7 +11,7 @@ func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_Voi
 	fmt.Printf("Received: %v\n", req.Text)
 
 	// Load test.mp3 file local to reponse to client
-	fileName := "test_pcm16.raw"
+	fileName := "ai_pcm16.raw"
 	audioData, err := os.ReadFile(fileName)
 	if err != nil {
 		return fmt.Errorf("VoiceChat: failed to read file: %v", err)
