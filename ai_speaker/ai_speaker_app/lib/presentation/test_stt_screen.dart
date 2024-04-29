@@ -24,10 +24,10 @@ class TestSTTScreen extends StatefulWidget {
 class _TestSTTScreenState extends State<TestSTTScreen> {
   String textFromSpeaker = '';
   final RecorderStream _recorder = RecorderStream();
-  final _playerStream = PlayerStream();
 
   late StreamSubscription _recorderStatus;
   late StreamSubscription _audioStream;
+  bool _isRecording = false;
 
   late IOWebSocketChannel channel;
 
@@ -37,9 +37,10 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
       'YOUR API KEY'; // NOTE: Replace with your Deepgram API key (just for testing)
 
   final audioPlayer = AudioPlayer();
-  bool isStartedFlutterSound = false;
 
   final _messageController = TextEditingController();
+
+  final _soundStreamingPlayerKey = GlobalKey<VoiceStreamPlayerWidgetState>();
 
   @override
   void initState() {
@@ -54,10 +55,12 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
   }
 
   Future<void> _initStream() async {
+    debugPrint('>>> init stream');
     channel = IOWebSocketChannel.connect(Uri.parse(serverUrl),
         headers: {'Authorization': 'Token $apiKey'});
 
     channel.stream.listen((event) async {
+      debugPrint('>>> event from stream: $event');
       final parsedJson = jsonDecode(event);
       final transcript = parsedJson['channel']['alternatives'][0]['transcript'];
 
@@ -75,9 +78,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
       }
     });
 
-    await Future.wait([
-      _recorder.initialize(),
-    ]);
+    await _recorder.initialize();
   }
 
   void _startRecord() async {
@@ -86,13 +87,16 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
 
     await _recorder.start();
 
-    setState(() {});
+    setState(() {
+      _isRecording = true;
+    });
   }
 
   void _stopRecord() async {
-    await _recorder.stop();
-
-    setState(() {});
+    _disposeRecorder();
+    setState(() {
+      _isRecording = false;
+    });
   }
 
   @override
@@ -111,22 +115,29 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
             ),
             const SizedBox(height: 32),
             OutlinedButton(
-              onPressed: () {
-                updateText('');
-                _startRecord();
-              },
+              onPressed: !_isRecording
+                  ? () {
+                      updateText('');
+                      _startRecord();
+                    }
+                  : null,
               child: const Text('Start STT'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                _stopRecord();
-              },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.blue,
               ),
-              child: const Text('Stop STT'),
             ),
+            if (_isRecording)
+              OutlinedButton(
+                onPressed: () {
+                  _stopRecord();
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Stop STT'),
+              ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -139,28 +150,19 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
             ),
             OutlinedButton(
               onPressed: () {
-                setState(() {
-                  isStartedFlutterSound = !isStartedFlutterSound;
-                });
+                _soundStreamingPlayerKey?.currentState?.startPlayer();
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.blue,
               ),
-              child: const Text('Play voice message with just flutter sound'),
+              child: const Text('Get Gemini AI response'),
             ),
-            if (isStartedFlutterSound)
-              VoiceStreamPlayerWidget(
-                audioStream: widget.voiceClient
-                    .voiceChat(
-                      VoiceChatRequest(
-                        text: _messageController.text,
-                      ),
-                    )
-                    .map(
-                      (event) => event.audio,
-                    ),
-              ),
+            VoiceStreamPlayerWidget(
+              key: _soundStreamingPlayerKey,
+              voiceClient: widget.voiceClient,
+              messageController: _messageController,
+            ),
           ],
         ),
       ),
@@ -169,22 +171,27 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
 
   void updateText(newText) {
     setState(() {
-      textFromSpeaker = textFromSpeaker + ' ' + newText;
+      textFromSpeaker += newText;
     });
+    _messageController.text = textFromSpeaker;
   }
 
   void resetText() {
+    _messageController.clear();
     setState(() {
       textFromSpeaker = '';
     });
   }
 
+  Future<void> _disposeRecorder() async {
+    await _recorderStatus.cancel();
+    await _audioStream.cancel();
+    await channel.sink.close();
+  }
+
   @override
   void dispose() {
-    _recorderStatus.cancel();
-    _audioStream.cancel();
-    channel.sink.close();
-
+    _disposeRecorder();
     super.dispose();
   }
 }
