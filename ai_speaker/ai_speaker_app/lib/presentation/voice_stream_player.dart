@@ -91,6 +91,16 @@ class _VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    // Implement audio player UI here
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: const Text(
+        'Voice stream playing ...',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }

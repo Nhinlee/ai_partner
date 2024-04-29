@@ -39,6 +39,8 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
   final audioPlayer = AudioPlayer();
   bool isStartedFlutterSound = false;
 
+  final _messageController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -125,6 +127,16 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
               ),
               child: const Text('Stop STT'),
             ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _messageController,
+                decoration: InputDecoration(
+                  hintText: 'Type your message here',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
             OutlinedButton(
               onPressed: () {
                 setState(() {
@@ -133,7 +145,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.blue,
               ),
               child: const Text('Play voice message with just flutter sound'),
             ),
@@ -142,8 +154,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
                 audioStream: widget.voiceClient
                     .voiceChat(
                       VoiceChatRequest(
-                        text:
-                            "Hello, this is a test message from Flutter app. Ahihi!",
+                        text: _messageController.text,
                       ),
                     )
                     .map(

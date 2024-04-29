@@ -3,7 +3,9 @@ package apis
 import (
 	"ai_speaker/golibs/tts"
 	pb "ai_speaker/pb/chat"
+	"context"
 	"fmt"
+	"io"
 )
 
 func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_VoiceChatServer) error {
@@ -39,25 +41,61 @@ func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_Voi
 		return fmt.Errorf("VoiceChat: failed to generate content: %v", err)
 	}
 
-	var respMessage string
-	for content := range contentChan {
-		fmt.Printf("Content: %s\n", content)
-		respMessage = content
-		break
-	}
-
-	// Use TTS to convert text to speech
-	audioResp, err := s.TTS.CreateSpeech(ctx, &tts.CreateSpeechRequest{
-		Input:          respMessage,
-		ResponseFormat: "mp3", // TODO: Use enum
-		Speed:          1.0,
-	})
+	// Generate audio data from content channel
+	audioChannel, err := s.generateAudioData(ctx, contentChan)
 	if err != nil {
-		return fmt.Errorf("VoiceChat: failed to create speech: %v", err)
+		return fmt.Errorf("VoiceChat: failed to generate audio data: %v", err)
 	}
-	defer audioResp.Close()
 
-	// Read audio data from TTS response
+	// Send audio data to client
+	for audioData := range audioChannel {
+		fmt.Printf("Audio data len: %v\n", len(audioData))
+		err := svc.Send(&pb.VoiceChatResponse{
+			Audio: audioData,
+			IsEnd: false,
+		})
+		if err != nil {
+			return fmt.Errorf("VoiceChat: failed to send response: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Server) generateAudioData(ctx context.Context, contentChan <-chan string) (chan []byte, error) {
+	audioDataChan := make(chan []byte)
+
+	go func() {
+		defer close(audioDataChan)
+
+		for content := range contentChan {
+			fmt.Printf("Content: %s\n", content)
+
+			// Use TTS to convert text to speech
+			audioResp, err := s.TTS.CreateSpeech(ctx, &tts.CreateSpeechRequest{
+				Input:          content,
+				ResponseFormat: "mp3", // TODO: Use enum
+				Speed:          1.0,
+			})
+			if err != nil {
+				fmt.Printf("failed to create speech: %v", err)
+				return
+			}
+
+			audioData, err := readAudioData(audioResp)
+			if err != nil {
+				fmt.Printf("failed to read audio data: %v", err)
+				return
+			}
+
+			audioDataChan <- audioData
+		}
+	}()
+
+	return audioDataChan, nil
+}
+
+func readAudioData(audioResp io.ReadCloser) ([]byte, error) {
 	const chunkSize = 1024
 	audioData := make([]byte, 0)
 	buf := make([]byte, chunkSize)
@@ -71,16 +109,5 @@ func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_Voi
 		}
 	}
 
-	fmt.Printf("Audio data length: %d\n", len(audioData))
-
-	// Send audio data to client
-	err = svc.Send(&pb.VoiceChatResponse{
-		Audio: audioData,
-		IsEnd: false,
-	})
-	if err != nil {
-		return fmt.Errorf("VoiceChat: failed to send response: %v", err)
-	}
-
-	return nil
+	return audioData, nil
 }
