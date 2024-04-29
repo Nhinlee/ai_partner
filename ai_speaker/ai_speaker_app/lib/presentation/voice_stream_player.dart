@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -21,8 +22,9 @@ class _VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
   bool _isPlayerInitialized = false;
 
   static const blockSize = 2048;
-  static const int tSampleRate = 44000;
+  static const int tSampleRate = 24000;
   bool isFeeding = false;
+  final _audioQueue = Queue<Uint8List>();
 
   @override
   void initState() {
@@ -54,13 +56,12 @@ class _VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
     );
     setState(() {});
 
-    debugPrint('>>> startPlayer - audioStream: ${widget.audioStream}');
     widget.audioStream.listen(
       (data) async {
+        _audioQueue.add(Uint8List.fromList(data));
         if (!isFeeding) {
           isFeeding = true;
-          await feedHim(Uint8List.fromList(data));
-          isFeeding = false;
+          startFeeding();
         }
       },
       // onDone: () {
@@ -68,6 +69,14 @@ class _VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
       //   setState(() {});
       // },
     );
+  }
+
+  void startFeeding() async {
+    while (_audioQueue.isNotEmpty) {
+      var data = _audioQueue.removeFirst();
+      await feedHim(data);
+    }
+    isFeeding = false;
   }
 
   Future<void> feedHim(Uint8List buffer) async {
