@@ -1,6 +1,7 @@
 package gemini
 
 import (
+	chatbot "ai_speaker/golibs/chat_bot"
 	"ai_speaker/golibs/chat_bot/utils"
 	"context"
 
@@ -53,7 +54,7 @@ func getCombinedText(content *genai.Content) string {
 	return text
 }
 
-func (g *Gemini) GenerateRealtimeContent(ctx context.Context, prompt string) (chan string, error) {
+func (g *Gemini) GenerateRealtimeContent(ctx context.Context, prompt string, ops chatbot.RealtimeContentOptions) (chan string, error) {
 	iter := g.model.GenerateContentStream(ctx, genai.Text(prompt))
 
 	ch := make(chan string)
@@ -70,5 +71,5 @@ func (g *Gemini) GenerateRealtimeContent(ctx context.Context, prompt string) (ch
 		}
 	}()
 
-	return utils.ToSentenceStream(ch), nil
+	return utils.ToSentenceStream(ch, ops.MaxSentencesPerMessage), nil
 }

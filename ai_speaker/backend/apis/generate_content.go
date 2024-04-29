@@ -1,6 +1,7 @@
 package apis
 
 import (
+	chatbot "ai_speaker/golibs/chat_bot"
 	"ai_speaker/golibs/tts"
 	"fmt"
 
@@ -48,7 +49,9 @@ func (s *Server) GenerateRealtimeContent(c *gin.Context) {
 		return
 	}
 
-	contentChan, err := s.ChatBot.GenerateRealtimeContent(c, req.Prompt)
+	contentChan, err := s.ChatBot.GenerateRealtimeContent(c, req.Prompt, chatbot.RealtimeContentOptions{
+		MaxSentencesPerMessage: 1,
+	})
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),

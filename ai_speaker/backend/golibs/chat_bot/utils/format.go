@@ -11,7 +11,7 @@ const (
 // / Given: response stream strings from the AI model
 // / Returns: sentences stream from the response strings
 // TODO: add unit tests
-func ToSentenceStream(textChannel chan string) chan string {
+func ToSentenceStream(textChannel chan string, maxSentencesPerM int) chan string {
 	sentencesChan := make(chan string)
 
 	go func() {
@@ -23,8 +23,23 @@ func ToSentenceStream(textChannel chan string) chan string {
 			sentences := splitToSentences(paragraph)
 			n := len(sentences)
 
+			countSentence := 0
+			currentSentence := ""
 			for i := 0; i < n-1; i++ {
-				sentencesChan <- sentences[i]
+				if countSentence >= maxSentencesPerM {
+					// send the current sentence
+					sentencesChan <- currentSentence
+					currentSentence = ""
+					countSentence = 0
+				}
+
+				currentSentence += sentences[i]
+				countSentence++
+			}
+
+			// send the last sentence
+			if currentSentence != "" {
+				sentencesChan <- currentSentence
 			}
 
 			// append the last sentence to the paragraph

@@ -1,6 +1,7 @@
 package apis
 
 import (
+	chatbot "ai_speaker/golibs/chat_bot"
 	"ai_speaker/golibs/tts"
 	pb "ai_speaker/pb/chat"
 	"context"
@@ -36,7 +37,9 @@ func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_Voi
 	// }
 
 	ctx := svc.Context()
-	contentChan, err := s.ChatBot.GenerateRealtimeContent(ctx, req.Text)
+	contentChan, err := s.ChatBot.GenerateRealtimeContent(ctx, req.Text, chatbot.RealtimeContentOptions{
+		MaxSentencesPerMessage: 5,
+	})
 	if err != nil {
 		return fmt.Errorf("VoiceChat: failed to generate content: %v", err)
 	}
