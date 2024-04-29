@@ -64,10 +64,6 @@ class _VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
           startFeeding();
         }
       },
-      // onDone: () {
-      //   _player.stopPlayer();
-      //   setState(() {});
-      // },
     );
   }
 
