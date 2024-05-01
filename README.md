@@ -45,4 +45,7 @@ TBU
         - AI engines: Gemini for realtime AI chat bot, Deepgram for STT, OpenAI for TTS
         - RPC framework: gRPC to communicate between Flutter app and Go server
         - Protocol: HTTP2
+    - Limitations:
+        - OpenAI: [Rate Limit](https://platform.openai.com/docs/guides/rate-limits/usage-tiers?context=tier-free)
+        
     - [Demo Ep4](https://todo)
