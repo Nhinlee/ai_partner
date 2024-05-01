@@ -39,7 +39,7 @@ TBU
 - Trying with OpenAI TTS (text-to-speak) using terminal
     - [Demo Ep3](https://youtu.be/M7G_Ws1qgsM?si=hir2If0khgdCRvCf) - Demonstrate how to use OpenAI TTS API to convert text to speech using terminal.
 
-### 2024/04/29
+### 2024/04/29: Voice chat with AI
 - Implement the voice chat API
     - Tech stack:
         - AI engines: Gemini for LLM, OpenAI for TTS
