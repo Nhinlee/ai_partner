@@ -42,8 +42,7 @@ TBU
 ### 2024/04/29
 - Implement the voice chat API
     - Tech stack:
-        - API architecture: RPC
-        - API framework: gRPC
-        - Streaming audio protocol: gRPC stream
-        - Client framework: flutter_sound
+        - AI engines: Gemini for LLM, OpenAI for TTS
+        - RPC framework: gRPC
+        - Protocol: HTTP2
     - [Demo Ep4](https://todo)
