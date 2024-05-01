@@ -42,7 +42,7 @@ TBU
 ### 2024/04/29: Voice chat with AI
 - Implement the voice chat API
     - Tech stack:
-        - AI engines: Gemini for LLM, OpenAI for TTS
-        - RPC framework: gRPC
+        - AI engines: Gemini for realtime AI chat bot, Deepgram for STT, OpenAI for TTS
+        - RPC framework: gRPC to communicate between Flutter app and Go server
         - Protocol: HTTP2
     - [Demo Ep4](https://todo)
