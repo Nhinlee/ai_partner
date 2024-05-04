@@ -50,13 +50,13 @@ TBU
         
     - [Demo Ep4](https://todo)
 #### Development steps
-1. Setup gRPC
+1. **Setup gRPC**
     -  Server side: https://grpc.io/docs/languages/go/quickstart/
     -  Client side: https://grpc.io/docs/languages/dart/quickstart/
-2. Transform audio data & play streaming audio on client side
+2. **Transform audio data & play streaming audio on client side**
     - Server:
         - Get the audio locally and send it to the client
     - Client:
         - Play the audio stream using `flutter_sound` package
-3. Implement API logic to handle the voice chat
+3. **Implement API logic to handle the voice chat**
     - Server logic: ![AI assistant app flow](./ai_speaker/assets/imgs/seq_api.png)
