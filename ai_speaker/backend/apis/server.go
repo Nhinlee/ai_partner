@@ -67,18 +67,21 @@ func NewServer(api APIArch, chatBot chatbot.ChatBot, tts tts.TTS) (*Server, erro
 }
 
 func (s *Server) SetupGRPC() error {
+	// Create a listener on TCP port
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("GRPC_PORT")))
 	if err != nil {
 		fmt.Printf("failed to listen: %v", err)
 		return err
 	}
 
+	// Create a gRPC server object
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
 	// Register the service with the server
 	pb.RegisterVoiceChatServiceServer(grpcServer, s)
 
+	// Serve the server
 	fmt.Printf("Server started on port %s\n", os.Getenv("GRPC_PORT"))
 	err = grpcServer.Serve(lis)
 	if err != nil {

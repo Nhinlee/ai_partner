@@ -38,7 +38,7 @@ func (s *Server) VoiceChat(req *pb.VoiceChatRequest, svc pb.VoiceChatService_Voi
 
 	ctx := svc.Context()
 	contentChan, err := s.ChatBot.GenerateRealtimeContent(ctx, req.Text, chatbot.RealtimeContentOptions{
-		MaxSentencesPerMessage: 5,
+		MaxSentencesPerMessage: 100,
 	})
 	if err != nil {
 		return fmt.Errorf("VoiceChat: failed to generate content: %v", err)
@@ -72,8 +72,6 @@ func (s *Server) generateAudioData(ctx context.Context, contentChan <-chan strin
 		defer close(audioDataChan)
 
 		for content := range contentChan {
-			fmt.Printf("Content: %s\n", content)
-
 			// Use TTS to convert text to speech
 			audioResp, err := s.TTS.CreateSpeech(ctx, &tts.CreateSpeechRequest{
 				Input:          content,
@@ -84,6 +82,8 @@ func (s *Server) generateAudioData(ctx context.Context, contentChan <-chan strin
 				fmt.Printf("failed to create speech: %v", err)
 				return
 			}
+
+			fmt.Printf(">>> to speech succeed: %v\n", content)
 
 			audioData, err := readAudioData(audioResp)
 			if err != nil {

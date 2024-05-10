@@ -25,7 +25,7 @@ class VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
   bool _isPlayerInitialized = false;
   bool _isPlayerStarted = false;
 
-  static const blockSize = 2048;
+  static const blockSize = 4096;
   static const int tSampleRate = 24000;
   bool isFeeding = false;
   final _audioQueue = Queue<Uint8List>();
@@ -48,6 +48,9 @@ class VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
   }
 
   void startPlayer() async {
+    // clear the audio queues
+    _audioQueue.clear();
+
     if (_isPlayerStarted) {
       return;
     }
@@ -62,7 +65,6 @@ class VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
     );
     setState(() {});
 
-    audioStream:
     widget.voiceClient
         .voiceChat(
           VoiceChatRequest(
@@ -89,13 +91,13 @@ class VoiceStreamPlayerWidgetState extends State<VoiceStreamPlayerWidget> {
       await feedHim(data);
     }
     isFeeding = false;
-    _player.stopPlayer();
+    // _player.stopPlayer();
     _isPlayerStarted = false;
     setState(() {});
   }
 
   Future<void> feedHim(Uint8List buffer) async {
-    debugPrint('>>> feedHim - buffer: $buffer');
+    debugPrint('>>> feedHim - length: ${buffer.length}');
     var lnData = 0;
     var totalLength = buffer.length;
     while (totalLength > 0 && !_player.isStopped) {

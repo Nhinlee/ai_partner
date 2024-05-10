@@ -34,7 +34,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
   static const serverUrl =
       'wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&language=en-GB';
   static const apiKey =
-      'YOUR API KEY'; // NOTE: Replace with your Deepgram API key (just for testing)
+      ''; // NOTE: Replace with your Deepgram API key (just for testing)
 
   final audioPlayer = AudioPlayer();
 
@@ -117,7 +117,7 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
             OutlinedButton(
               onPressed: !_isRecording
                   ? () {
-                      updateText('');
+                      resetText();
                       _startRecord();
                     }
                   : null,
@@ -171,9 +171,9 @@ class _TestSTTScreenState extends State<TestSTTScreen> {
 
   void updateText(newText) {
     setState(() {
-      textFromSpeaker += newText;
+      textFromSpeaker += ' ' + newText;
     });
-    _messageController.text = textFromSpeaker;
+    _messageController.text = "${_messageController.text.trim()} $newText";
   }
 
   void resetText() {

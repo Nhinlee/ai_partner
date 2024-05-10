@@ -26,7 +26,7 @@ func NewSecret() (*Secret, error) {
 
 	return &Secret{
 		AI: AISecret{
-			GenaiAPIKey: os.Getenv("GENAI_API_KEY"),
+			GenaiAPIKey:  os.Getenv("GENAI_API_KEY"),
 			OpenAiTTSKey: os.Getenv("OPENAI_TTS_KEY"),
 		},
 	}, nil
